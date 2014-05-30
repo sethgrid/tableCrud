@@ -1,9 +1,11 @@
 tableCrud
 =========
 
-Take mysql tables and auto generate crud structs.
+Take mysql tables and auto generate crud structs and methods.
 
 Take a look at the following two code samples on how to use tableCrud. The first example is of its use. The second example is how to generate the table cruds. 
+
+Currently, the package only creates getters and only recognizes columns that are varchar, int, and tinyint (bool). 
 
 ### Usage
 
