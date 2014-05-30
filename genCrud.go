@@ -12,6 +12,7 @@ import (
 // GenCrud goes trough all tables passed in and creates a *.go file for each table
 // in the path location. write true will write the file. write false with print to stdout.
 func GenCrud(allTables map[string]*Table, path string, write bool) {
+	// generate table crud
 	for tableName, v := range allTables {
 		log.Printf("Table %s\n", tableName)
 		for _, c := range v.Cols {
@@ -34,7 +35,9 @@ func GenCrud(allTables map[string]*Table, path string, write bool) {
 		var writer io.Writer
 		if write {
 			writer, err = os.Create(fmt.Sprintf("%s/%s.go", path, tableName))
-			log.Print("error creating *.go file: ", tableName, err)
+			if err != nil {
+				log.Print("error creating *.go file: ", tableName, err)
+			}
 		} else {
 			writer = os.Stdout
 		}
