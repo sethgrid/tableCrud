@@ -5,7 +5,7 @@ Take mysql tables and auto generate crud structs and methods.
 
 Take a look at the following two code samples on how to use tableCrud. The first example is of its use. The second example is how to generate the table cruds. 
 
-Currently, the package only creates getters (for any column) and a transactional post and put (ie, insert and update).  Currently, it only recognizes columns that are varchar, int, and tinyint (bool). 
+Currently, the package creates getters (for any column) and a transactional post, put, and delete (ie, insert, update, and delete).  Currently, it only recognizes columns that are varchar, int, and tinyint (bool) and has issues with NULL.  
 
 ### Usage
 
@@ -46,6 +46,9 @@ func main(){
 	// Put: update a record as a transaction
 	users[0].Email = "new_email@example.com"
 	u1.Put(users[0])
+	
+	// Delete: deletes a record as a transaction
+	u1.Delete(users[0])
 	
 	// You can link transactions to happen in a single commit!
 	u2.Tx = u1.Tx
