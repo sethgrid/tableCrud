@@ -5,7 +5,7 @@ Take mysql tables and auto generate crud structs and methods.
 
 Take a look at the following two code samples on how to use tableCrud. The first example is of its use. The second example is how to generate the table cruds. 
 
-Currently, the package only creates getters and only recognizes columns that are varchar, int, and tinyint (bool). 
+Currently, the package only creates getters (for any column) and a transactional post.  Currently, it only recognizes columns that are varchar, int, and tinyint (bool). 
 
 ### Usage
 
@@ -20,18 +20,33 @@ import (
 )
 
 func main(){
-        // set up your table's crud
-        // you can access any table in your mysql db with `crud.<Table>{}`
-		user := crud.User{}
-		
-		// set up the db so the crud methods work
-		// this currently is set to only use a local mysql instance with no username or password
-		crud.SetDB()
-		
-		// use the crud
-		// the crud.<Table> struct will have getters for all columns
-		users := user.GetById(1)
-		log.Println(users[0].Email)
+	// set up your table's crud
+	// you can access any table in your mysql db with `crud.<Table>{}`
+	// here we are setting up two entries for the user table. This could 
+	// easily be a user table and a settings table.
+	u1 := crud.User{}
+	u2 := crud.User{}
+
+	// set up the db so the crud methods work
+	// this currently is set to only use a local mysql instance with no username or password
+	crud.SetDB()
+	
+	// ***
+	// use the crud
+	// ***
+	
+	// Getters: the crud.<Table> struct will have getters for all columns
+	users := u1.GetById(1)
+	log.Println(users[0].Email)
+	
+	// Post: insert a new record as a transaction
+	u1.Post(&crud.UserRecord{Name: "Abbot"})
+	u2.Post(&crud.UserRecord{Name: "Costello", Email: "ab@example.com"})
+	
+	// You can link transactions to happen in a single commit!
+	u2.Tx = u1.Tx
+	
+	u2.Commit() // u1.Commit() would have the same effect of committing the transaction
 }
 ```
 
@@ -52,8 +67,8 @@ import (
 )
 
 func main() {
-    // connect to the database
-    db_user := ""
+	// connect to the database
+	db_user := ""
 	db_pw := ""
 	db_name := "test_db"
 	dataSource := ""
