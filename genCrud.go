@@ -21,10 +21,11 @@ func GenCrud(allTables map[string]*Table, path string, write bool) {
 
 		funcMap := template.FuncMap{
 			// The name "title" is what the function will be called in the template text.
-			"title":      strings.Title,
-			"join":       joinComma,
-			"structInit": structInit,
-			"castType":   castType,
+			"title":        strings.Title,
+			"join":         joinComma,
+			"structInit":   structInit,
+			"castType":     castType,
+			"insertHelper": insertHelper,
 		}
 
 		tmpl, err := template.New("testTemplate").Funcs(funcMap).Parse(OUTPUT_FILE)
