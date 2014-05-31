@@ -26,6 +26,7 @@ func GenCrud(allTables map[string]*Table, path string, write bool) {
 			"structInit":   structInit,
 			"castType":     castType,
 			"insertHelper": insertHelper,
+			"updateHelper": updateHelper,
 		}
 
 		tmpl, err := template.New("testTemplate").Funcs(funcMap).Parse(OUTPUT_FILE)

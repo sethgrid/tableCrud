@@ -74,6 +74,20 @@ func (t *{{ title .Name }}) Post(u *{{ title .Name }}Record) error {
 	return err
 }
 
+func (t *{{ title .Name }}) Put(u *{{ title .Name }}Record) error {
+	var err error
+	if t.Tx == nil {
+		// new transaction
+		t.Tx, err = DB.Begin()
+		if err != nil {
+			log.Print("error beginning transaction in *{{ title .Name }}.Put: ", err)
+		}
+	}
+
+	_, err = t.Tx.Query({{ updateHelper . }})
+	return err
+}
+
 {{ range $cols }}
 func (t *{{ title $name}}) GetBy{{ title .COLUMN_NAME.String}}({{ .COLUMN_NAME.String }} {{ castType .DATA_TYPE.String }}) []*{{ title $name}}Record{
 	r, err := DB.Query("select * from {{ $name }} where {{ .COLUMN_NAME.String }}=?", {{ .COLUMN_NAME.String}})
@@ -115,6 +129,30 @@ func insertHelper(t *Table) string {
 		"\"insert into %s set %s\", %s",
 		t.Name, strings.Join(set, ","),
 		strings.Join(val, ","),
+	)
+}
+
+// Helper function to generate insert query
+func updateHelper(t *Table) string {
+	set := make([]string, 0)
+	val := make([]string, 0)
+	whereQ := ""
+	whereV := ""
+	for _, col := range t.Cols {
+		if col.COLUMN_KEY.String == "PRI" {
+			whereQ = col.COLUMN_NAME.String + "=?"
+			whereV = "u." + strings.Title(col.COLUMN_NAME.String)
+		}
+		set = append(set, col.COLUMN_NAME.String+"=?")
+		val = append(val, "u."+strings.Title(col.COLUMN_NAME.String))
+	}
+	return fmt.Sprintf(
+		"\"update %s set %s where %s\", %s, %s",
+		t.Name,
+		strings.Join(set, ","),
+		whereQ,
+		strings.Join(val, ","),
+		whereV,
 	)
 }
 
